@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="ja" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lキャラタイプ診断</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&amp;family=Outfit:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    * {
+      font-family: 'Zen Maru Gothic', 'Outfit', sans-serif;
+    }
+    
+
+#question-screen {
+  outline: 2px solid red;
+}
+
+    .answer-btn {
+      width: 60px;
+      height: 60px;
+      background: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    
+    .answer-btn svg {
+      width: 32px;
+      height: 32px;
+      fill: #d1d5db;
+      transition: all 0.3s ease;
+    }
+    
+
+
+    @media (max-width: 640px) {
+      .answer-btn {
+        width: 56px;
+        height: 56px;
+      }
+      
+      .answer-btn svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+    
+    .answer-btn:hover {
+      transform: translateY(-4px) scale(1.1);
+      box-shadow: 0 6px 16px rgba(233, 30, 99, 0.3);
+    }
+    
+    .answer-btn:hover svg {
+      fill: #ec407a;
+    }
+    
+    .answer-btn.selected {
+      transform: translateY(-4px) scale(1.2);
+      box-shadow: 0 8px 20px rgba(233, 30, 99, 0.4);
+    }
+    
+    .answer-btn.selected svg {
+      fill: #e91e63;
+
+
+/* モーダル動き */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.25s ease-out;
+}
+
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-4px) scale(1.05); }
+      50% { transform: translateY(-4px) scale(1.1); }
+    }
+    
+    .card-float {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .result-reveal {
+      animation: reveal 0.8s ease forwards;
+    }
+    
+    @keyframes reveal {
+      0% { opacity: 0; transform: scale(0.8) rotate(-5deg); }
+      50% { transform: scale(1.05) rotate(2deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0); }
+    }
+    
+    .sparkle {
+      position: absolute;
+      animation: sparkleFloat 2s ease-in-out infinite;
+    }
+    
+    .sparkle svg {
+      width: 24px;
+      height: 24px;
+      animation: sparkleRotate 1.5s linear infinite;
+    }
+    
+    @keyframes sparkleFloat {
+      0%, 100% { 
+        opacity: 0; 
+        transform: scale(0);
+      }
+      50% { 
+        opacity: 1; 
+        transform: scale(1);
+      }
+    }
+    
+    @keyframes sparkleRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .sparkle-burst {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      animation: burst 1.5s ease-out forwards;
+    }
+    
+    @keyframes burst {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: var(--tx) var(--ty) scale(0);
+        opacity: 0;
+      }
+    }
+    
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      animation: burst 0.8s ease-out forwards;
+    }
+    
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(400px) rotate(720deg);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes burst {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(0.3);
+        opacity: 0;
+      }
+    }
+    
+    .suit-icon {
+      font-size: 1.5rem;
+    }
+    
+    .progress-fill {
+      transition: width 0.4s ease;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full overflow-auto"><!-- Start Screen -->
+   <div id="start-screen" class="min-h-full w-full flex flex-col items-center justify-center p-6 relative overflow-hidden" style="background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);"><!-- Decorative Elements -->
+
+<!-- 後ろのふよふよ -->
+
+
+   <div class="absolute top-10 left-2 sm:left-10 opacity-20 card-float" style="animation-delay: 0s;">
+  <img src="./images/TPLO.png" class="w-32 h-32 object-contain" alt="" />
+</div>
+
+<div class="absolute top-20 right-2 sm:right-16 opacity-20 card-float" style="animation-delay: 0.5s;">
+  <img src="./images/CPLS.png" class="w-32 h-32 object-contain" alt="" />
+</div>
+
+<div class="absolute bottom-32 left-2 sm:left-16 opacity-20 card-float" style="animation-delay: 1s;">
+  <img src="./images/TKGO.png" class="w-32 h-32 object-contain" alt="" />
+</div>
+
+<div class="absolute bottom-20 right-2 sm:right-10 opacity-20 card-float" style="animation-delay: 1.5s;">
+  <img src="./images/TKGO.png" class="w-32 h-32 object-contain" alt="" />
+</div>
+<!-- 後ろのふよふよここまで -->
+
+    <div class="text-center z-10 max-w-md">
+     <div class="mb-6">
+
+<!-- トップ画像のビジュアル -->
+
+  <div class="w-48 h-48 mx-auto bg-white rounded-2xl shadow-2xl flex items-center justify-center overflow-hidden"
+     style="background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%);">
+  <img
+    src="./images/CPLS.png"
+    alt="dummy"
+    class="w-24 h-24 object-contain"
+  />
+</div>
+
+      </div>
+
+<!-- トップ画像のビジュアルここまで -->
+
+     </div>
+     <h1 id="main-title" class="text-4xl font-bold mb-4" style="background: linear-gradient(135deg, #e91e63, #9c27b0); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Lキャラタイプ診断</h1>
+     <p id="subtitle" class="text-gray-600 mb-8 text-lg leading-relaxed">16タイプの中から<br>
+      あなたのキャラタイプを診断します</p>
+     
+<button id="start-btn" onclick="startDiagnosis()" class="px-10 py-4 text-white text-xl font-bold rounded-full shadow-lg transform hover:scale-105 transition-all duration-300" style="background: linear-gradient(135deg, #ec407a 0%, #ab47bc 100%);"> <span id="start-button-text">診断スタート！</span> </button>
+    </div>
+
+<div
+  id="question-screen"
+  class="min-h-screen w-full flex flex-col items-center justify-start pt-6 hidden"
+  style="background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);"
+>
+
+    <div class="w-full max-w-lg mx-auto"><!-- Progress Bar -->
+     <div class="mb-8">
+      <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-500">進捗</span> <span id="progress-text" class="text-sm font-bold" style="color: #e91e63;">1 / 12</span>
+      </div>
+      <div class="h-3 bg-white rounded-full overflow-hidden shadow-inner">
+       <div id="progress-bar" class="h-full rounded-full progress-fill" style="width: 8.33%; background: linear-gradient(90deg, #ec407a, #ab47bc);"></div>
+      </div>
+     </div><!-- Question Card -->
+     <div class="bg-white rounded-3xl shadow-xl p-8 mb-6 fade-in">
+      <div class="text-center mb-2"><span id="question-number" class="text-sm font-bold px-4 py-1 rounded-full" style="background: linear-gradient(135deg, #fce4ec, #f3e5f5); color: #e91e63;">Q1</span>
+      </div>
+      <p id="question-text" class="text-xl font-bold text-center text-gray-800 leading-relaxed mt-4">質問文がここに表示されます</p>
+     </div><!-- Answer Options -->
+     <div class="mb-8">
+      <div class="flex justify-between items-center mb-4 px-4"><span id="option-a-label" class="text-sm font-bold" style="color: #e91e63;">攻めたい</span> <span id="option-b-label" class="text-sm font-bold" style="color: #e91e63;">攻められたい</span>
+      </div>
+      <div class="flex justify-center items-center gap-2"><button class="answer-btn" onclick="selectAnswer(0)" data-index="0" id="btn-0">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg></button> <button class="answer-btn" onclick="selectAnswer(1)" data-index="1" id="btn-1">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg></button> <button class="answer-btn" onclick="selectAnswer(2)" data-index="2" id="btn-2">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg></button> <button class="answer-btn" onclick="selectAnswer(3)" data-index="3" id="btn-3">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg></button> <button class="answer-btn" onclick="selectAnswer(4)" data-index="4" id="btn-4">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg></button>
+      </div>
+     </div><!-- Navigation -->
+     <div class="flex justify-center"><button id="back-btn" onclick="prevQuestion()" class="px-6 py-3 bg-white text-gray-600 rounded-full shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"> <span>←</span> 前の質問に戻る </button>
+     </div>
+    </div>
+   </div><!-- Result Screen -->
+	  
+   <div id="result-screen" class="min-h-full w-full flex-col items-center p-6 hidden overflow-auto" style="background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);">
+	   
+	   
+    <div class="w-full max-w-lg mx-auto"><!-- Result Header -->
+     <div class="text-center mb-6 result-reveal">
+      <p class="text-lg text-gray-600 mb-2">あなたのタイプは...</p>
+      <div class="relative inline-block"><span class="sparkle" style="top: -15px; left: 10%; animation-delay: 0s;">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" fill="#ffd700" />
+        </svg></span> <span class="sparkle" style="top: 5px; right: 0%; animation-delay: 0.3s;">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" fill="#ffffff" />
+        </svg></span> <span class="sparkle" style="bottom: 15px; left: 0%; animation-delay: 0.6s;">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" fill="#ffd700" />
+        </svg></span> <span class="sparkle" style="top: 50%; right: -15px; animation-delay: 0.9s;">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" fill="#ffffff" />
+        </svg></span> <span class="sparkle" style="bottom: 5px; right: 20%; animation-delay: 0.2s;">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" fill="#ffd700" />
+        </svg></span> <span class="sparkle" style="top: 20%; left: -10px; animation-delay: 0.5s;">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" fill="#ffffff" />
+        </svg></span> <span class="sparkle" style="top: -5px; left: 50%; animation-delay: 0.4s;">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" fill="#ffd700" />
+        </svg></span> <span class="sparkle" style="bottom: -10px; right: 5%; animation-delay: 0.7s;">
+        <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" fill="#ffffff" />
+        </svg></span>
+       <div id="confetti-container" style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 300px; height: 100px; pointer-events: none;"></div>
+       <h2 id="result-type" class="text-4xl font-bold mb-2" style="background: linear-gradient(135deg, #e91e63, #9c27b0); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ダーククイーン</h2>
+      </div>
+      <p id="result-code" class="text-xl font-bold px-4 py-2 rounded-full inline-block" style="background: linear-gradient(135deg, #fce4ec, #f3e5f5); color: #e91e63;">♥️ TPLO</p>
+     </div><!-- Character Illustration Placeholder -->
+     <div class="bg-white rounded-3xl shadow-xl p-6 mb-6 fade-in" style="animation-delay: 0.2s;">
+	
+		 <!-- ここにimgが入る -->
+			<div
+  id="character-illustration"
+  class="w-full flex items-center justify-center py-6"
+></div>
+
+
+     </div><!-- Description -->
+     <div class="bg-white rounded-3xl shadow-xl p-6 mb-6 fade-in" style="animation-delay: 0.4s;">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2" style="color: #e91e63;"><span>📖</span> キャラクター説明</h3>
+      <p id="result-description" class="text-gray-700 leading-relaxed">説明文がここに表示されます</p>
+     </div><!-- Compatibility -->
+     <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="bg-white rounded-2xl shadow-lg p-4 fade-in" style="animation-delay: 0.6s;">
+       <h4 class="font-bold text-sm mb-2 flex items-center gap-1" style="color: #4caf50;"><span>💕</span> 相性◎</h4>
+       <p id="good-match" class="text-gray-800 font-medium text-sm"></p>
+      </div>
+      <div class="bg-white rounded-2xl shadow-lg p-4 fade-in" style="animation-delay: 0.7s;">
+       <h4 class="font-bold text-sm mb-2 flex items-center gap-1" style="color: #ff9800;"><span>💔</span> 相性△</h4>
+       <p id="bad-match" class="text-gray-800 font-medium text-sm"></p>
+      </div>
+     </div><!-- Action Buttons -->
+     <div class="space-y-3 fade-in" style="animation-delay: 0.8s;"><button onclick="restartDiagnosis()" class="w-full py-4 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300" style="background: linear-gradient(135deg, #ec407a 0%, #ab47bc 100%);"> 🔄 もう一度診断する </button>
+
+ <button onclick="toggleShareModal()" class="w-full py-4 font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border-2" style="background: white; color: #e91e63; border-color: #e91e63;"> 📤 診断結果をシェアする </button> 
+
+
+  <!-- モックアップ本体 -->
+
+<div
+  id="shareModal"
+  class="fixed inset-0 z-50 flex items-center justify-center"
+  style="display: none;"
+>
+  <!-- 背景 -->
+  <div
+    class="absolute inset-0 bg-black/40"
+    onclick="toggleshareModal()"
+  ></div>
+
+
+  <div
+    class="relative bg-white rounded-[32px] shadow-2xl w-[90%] max-w-sm p-6 text-center animate-scale-in"
+  >
+
+ <!-- 閉じるボタン -->
+   <button
+  onclick="toggleShareModal()"
+  class="absolute top-4 right-4 text-gray-400 text-xl"
+>
+  ×
+</button>
+
+    <p class="font-bold text-lg mb-4">診断結果をシェア</p>
+
+    <div class="flex flex-col gap-3">
+      <button class="py-3 rounded-full border">Xでシェア</button>
+      <button class="py-3 rounded-full border">LINEでシェア</button>
+      <button class="py-3 rounded-full border">Instagram</button>
+      <button class="py-3 rounded-full border" onclick="copyUrl()">リンクをコピー</button>
+    </div>
+  </div>
+</div>
+
+  <!-- モックアップ本体ここまで -->
+
+
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      main_title: 'Lキャラタイプ診断',
+      subtitle: '16タイプの中からあなたのキャラタイプを診断します',
+      start_button_text: '診断スタート！',
+      primary_color: '#e91e63',
+      secondary_color: '#ab47bc',
+      background_color: '#fce4ec',
+      text_color: '#424242',
+      accent_color: '#ec407a'
+    };
+
+    // Questions data - 12 questions for 4 dimensions (3 each)
+    const questions = [
+      // T/C - タチ/ネコ
+      {
+        text: '夜のポジションにおいて攻めたい?攻められたい?',
+        optionA: '攻めたい',
+        optionB: '攻められたい',
+        dimension: 'TC'
+      },
+      {
+        text: '自分の容姿に関係なく下着姿を見られる方が好き?見る方が好き?',
+        optionA: '見る方が好き',
+        optionB: '見られる方が好き',
+        dimension: 'TC'
+      },
+      {
+        text: '自分はドS or ドM?',
+        optionA: 'ドS',
+        optionB: 'ドM',
+        dimension: 'TC'
+      },
+      // P/K - Princess/Knight
+      {
+        text: '恋人といる時の荷物は？',
+        optionA: '持ってもらうのが嬉しい',
+        optionB: '持つのが嬉しい',
+        dimension: 'PK'
+      },
+      {
+        text: '理想の恋人像は？',
+        optionA: '守ってくれる、受け止めてくれる',
+        optionB: '守りたくなる、頼ってくれる',
+        dimension: 'PK'
+      },
+      {
+        text: '「好き」って言葉は？',
+        optionA: '言われたい',
+        optionB: '言いたい',
+        dimension: 'PK'
+      },
+      // O/S - Open/Secret
+      {
+        text: '自分のセクシャリティを隠している？',
+        optionA: '隠していない',
+        optionB: '隠している',
+        dimension: 'OS'
+      },
+      {
+        text: '自分に対して他者評価が気になる？',
+        optionA: '気にならない',
+        optionB: '気になる',
+        dimension: 'OS'
+      },
+      {
+        text: '恋人が付き合っていることを公表することに後ろめたさを感じる？',
+        optionA: '感じない',
+        optionB: '感じる',
+        dimension: 'OS'
+      },
+      // G/L - Gentle/Lady
+      {
+        text: 'フォーマルな場でドレスとセットアップどちらを着たいか',
+        optionA: 'セットアップ',
+        optionB: 'ドレス',
+        dimension: 'GL'
+      },
+      {
+        text: '胸を強調しない服を選びがちか',
+        optionA: '選びがち',
+        optionB: '選ばない',
+        dimension: 'GL'
+      },
+      {
+        text: '初対面で「かっこいい」「かわいい」どっちが嬉しいか',
+        optionA: 'かっこいい',
+        optionB: 'かわいい',
+        dimension: 'GL'
+      }
+    ];
+
+    // Character types data
+    const characterTypes = {
+      'TPLO': {
+        name: 'ダーククイーン',
+        suit: '♥️',
+        group: 'PL型',
+        image: './images/TPLO.png',
+        description: '恋愛では強気でリードすることが多く、自分のルールに従って動くことを好みます。相手を引きつけるカリスマ性がありますが、時に独占的になりすぎることも。感情表現は豊かで、情熱的に恋に向き合います。支配的でありながらも、信頼関係を大切にする一途な一面があります。',
+        goodMatch: 'CKLS',
+        badMatch: 'CPLO'
+      },
+      'TPLS': {
+        name: 'キャリアウーマン',
+        suit: '♥️',
+        group: 'PL型',
+        emoji: '💼',
+        description: '恋愛は効率重視で計画的に動くタイプです。自立心が強く、相手に頼るより自分で解決することを好みます。しかし心の奥では甘えたい気持ちも持っており、信頼できる相手には見せることも。恋の駆け引きよりも、着実な関係を築くことを大切にします。',
+        goodMatch: 'CKGO',
+        badMatch: 'TPGS'
+      },
+      'CPLO': {
+        name: 'ファッションリーダー',
+        suit: '♥️',
+        group: 'PL型',
+        emoji: '✨',
+        description: '直感で判断することが多く、自分のスタイルを貫くタイプです。しかし、自信がないところもあるため他者に認められることを実は望んでいます。自由である雰囲気を持ち、他者と打ち解けることができます。恋愛では自分の個性を大切にしつつ、ストレスのない関係を好みます。',
+        goodMatch: 'TKLO',
+        badMatch: 'TPLO'
+      },
+      'CPLS': {
+        name: 'トレンドライダー',
+        suit: '♥️',
+        group: 'PL型',
+        emoji: '🌟',
+        description: '流行や冒険を楽しむタイプで、恋愛にも自由なスタンスを持ちます。縛られるよりも軽やかで柔軟な関係を好みます。新しいことに挑戦する勇気があり、恋も自分らしく楽しむことができます。心の奥では誠実さを持っており、大切な人には真摯に向き合います。',
+        goodMatch: 'TKLS',
+        badMatch: 'TKGS'
+      },
+      'TPGO': {
+        name: 'ヒーローラビット',
+        suit: '🔶',
+        group: 'PG型',
+        emoji: '🐰',
+        description: '恋愛では積極的に行動し、相手を引っ張ることを好むタイプです。自分の思いを素直に表現し、オープンに恋愛を楽しむことができます。スポーティーな一面もあり、相手にワクワクや情熱を与えます。周囲を巻き込みながら、明るく前向きな関係を築くのが理想です。',
+        goodMatch: 'CPGS',
+        badMatch: 'CPGO'
+      },
+      'TPGS': {
+        name: 'ガラスプリンス',
+        suit: '🔶',
+        group: 'PG型',
+        emoji: '🪞',
+        description: '外見は自信満ちていますが、内面では慎重で控えめな面を持っています。恋愛では秘密主義で、相手に全てをさらけ出すことは少ないでしょう。ロマンチックな性格であり、甘えることを許してくれる相手を望みます。その繊細さやミステリアスな雰囲気が、周囲の興味を引きつけます。',
+        goodMatch: 'CKLO',
+        badMatch: 'TPLS'
+      },
+      'CPGO': {
+        name: 'リトルブラザー',
+        suit: '🔶',
+        group: 'PG型',
+        emoji: '🧸',
+        description: '恋愛では甘え上手で可愛らしい印象を与えられるタイプです。自分軸な面もあり、自身の今の思いや感情を大切にします。オープンな性格で、人懐っこく周囲とすぐに打ち解けることができます。柔らかく愛される魅力があり、守ってあげたくなる存在となるでしょう。',
+        goodMatch: 'TKGO',
+        badMatch: 'TPGO'
+      },
+      'CPGS': {
+        name: 'オフィスDJ',
+        suit: '🔶',
+        group: 'PG型',
+        emoji: '🎧',
+        description: '控えめで内向的ですが、恋愛では相手を大切に思う優しさがあります。秘密主義な面があり、全てをすぐに見せるわけではありません。慎重派な性格ですが、時々周りを驚かせる行動や言動があります。穏やかで落ち着いた魅力があり、隠れた魅力で相手を惹きつけられます。',
+        goodMatch: 'TPGO',
+        badMatch: 'TKLO'
+      },
+      'TKLO': {
+        name: 'キングマム',
+        suit: '☘️',
+        group: 'KL型',
+        emoji: '👸',
+        description: '恋愛では頼れる存在として、相手を包み込み支えることを好まれるタイプです。強さと優しさを兼ね備え、恋人に安心感を与えることができます。相手の気持ちに寄り添いながら、自分も時に甘えるバランス感覚を持たれています。安定感と包容力のある性格が、恋愛においても信頼を生むでしょう。',
+        goodMatch: 'CPLO',
+        badMatch: 'CPGS'
+      },
+      'TKLS': {
+        name: 'スカーレットスパイ',
+        suit: '☘️',
+        group: 'KL型',
+        emoji: '🕵️‍♀️',
+        description: '恋愛では刺激的でミステリアスな魅力を持たれるタイプです。好奇心が旺盛で、恋人をドキドキさせる行動をされます。一見慎重に見えますが、内面では情熱に溢れていることもあります。恋愛における駆け引きや冒険心が、関係をより深く魅力的にします。',
+        goodMatch: 'CPLS',
+        badMatch: 'TKGO'
+      },
+      'CKLO': {
+        name: 'マリンミューズ',
+        suit: '☘️',
+        group: 'KL型',
+        emoji: '🧜‍♀️',
+        description: '控えめで静かな雰囲気を持たれ、穏やかな恋愛を好まれるタイプです。相手の気持ちを観察しながら、慎重に距離を縮められます。内面には秘めた情熱があり、信頼関係が深まると自然に表現されます。優しさと落ち着きのある性格が、恋愛において信頼できる存在となるでしょう。',
+        goodMatch: 'TPGS',
+        badMatch: 'TKLS'
+      },
+      'CKLS': {
+        name: 'ピクシーエルフ',
+        suit: '☘️',
+        group: 'KL型',
+        emoji: '🧚',
+        description: '可愛らしく、恋愛そのものに対する理想が明確にあるタイプです。相手のために献身的に行動する姿が、相手の恋心を育てます。自分自身を後回しにしがちなため、相手も同じくらいの熱量で向き合ってくれているかを重視します。軽やかで愛らしい魅力が、恋愛関係において独特の魅力を生みます。',
+        goodMatch: 'TPLO',
+        badMatch: 'CPLS'
+      },
+      'TKGO': {
+        name: 'エリートバトラー',
+        suit: '♠️',
+        group: 'KG型',
+        emoji: '🎩',
+        description: '恋愛では相手を陰で支えることに幸福を感じるタイプです。一見控えめで礼儀正しく、安定感と安心感を提供されます。自分を前面に出しませんが、内面ではしっかりと考えています。誠実で真面目な性格が、信頼関係を深める大きな魅力となります。',
+        goodMatch: 'CPGO',
+        badMatch: 'TKLS'
+      },
+      'TKGS': {
+        name: 'ラブボム',
+        suit: '♠️',
+        group: 'KG型',
+        emoji: '💣',
+        description: 'ミステリアスで初めは不思議な印象です。関わっていくほどに魅力が増していき、恋人の特権と言われる一面をたまに見せてくれます。相手を喜ばせることに熱心で二面性があり、刺激的な関係を作られることが多いでしょう。恋愛においては、率直で分かりやすいアプローチを好みます。',
+        goodMatch: 'CKGO',
+        badMatch: 'CPLS'
+      },
+      'CKGO': {
+        name: 'ソフトガーディアン',
+        suit: '♠️',
+        group: 'KG型',
+        emoji: '🛡️',
+        description: '穏やかで優しく、恋愛では相手を安心させることを大切にされます。守りながらも強要せず、自然な距離感で関係を築かれるタイプです。柔らかく落ち着いた性格が、相手に癒しや安らぎを提供します。情熱的な一瞬よりも、長く暖かい関係に憧れています。',
+        goodMatch: 'TPLS',
+        badMatch: 'TKGS'
+      },
+      'CKGS': {
+        name: 'シャイラム',
+        suit: '♠️',
+        group: 'KG型',
+        emoji: '🐑',
+        description: '恋愛において非積極的ですが、その性格を面白いと感じてくれる人を好きになりがちです。恋愛では自分から行動することは少ないかもしれません。相手の好意を感じるたびに自身の気持ちに気づき、愛を育てていきます。その純粋さや守ってあげたくなる雰囲気が、恋愛において愛される要素となります。',
+        goodMatch: 'TPGO',
+        badMatch: 'CKLO'
+      }
+    };
+
+    // State
+    let currentQuestion = 0;
+    let answers = [];
+    let scores = { TC: 0, PK: 0, GL: 0, OS: 0 };
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          const mainTitle = document.getElementById('main-title');
+          const subtitle = document.getElementById('subtitle');
+          const startButtonText = document.getElementById('start-button-text');
+          
+          if (mainTitle) mainTitle.textContent = config.main_title || defaultConfig.main_title;
+          if (subtitle) subtitle.innerHTML = (config.subtitle || defaultConfig.subtitle).replace(/\n/g, '<br>');
+          if (startButtonText) startButtonText.textContent = config.start_button_text || defaultConfig.start_button_text;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.primary_color || defaultConfig.primary_color,
+              set: (value) => window.elementSdk.setConfig({ primary_color: value })
+            },
+            {
+              get: () => config.secondary_color || defaultConfig.secondary_color,
+              set: (value) => window.elementSdk.setConfig({ secondary_color: value })
+            },
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => window.elementSdk.setConfig({ background_color: value })
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => window.elementSdk.setConfig({ text_color: value })
+            },
+            {
+              get: () => config.accent_color || defaultConfig.accent_color,
+              set: (value) => window.elementSdk.setConfig({ accent_color: value })
+            }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['main_title', config.main_title || defaultConfig.main_title],
+          ['subtitle', config.subtitle || defaultConfig.subtitle],
+          ['start_button_text', config.start_button_text || defaultConfig.start_button_text]
+        ])
+      });
+    }
+
+    function startDiagnosis() {
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('question-screen').classList.remove('hidden');
+      document.getElementById('question-screen').classList.add('flex');
+      currentQuestion = 0;
+      answers = [];
+      scores = { TC: 0, PK: 0, GL: 0, OS: 0 };
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById('question-number').textContent = `Q${currentQuestion + 1}`;
+      document.getElementById('question-text').textContent = q.text;
+      document.getElementById('progress-text').textContent = `${currentQuestion + 1} / ${questions.length}`;
+      document.getElementById('progress-bar').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+      
+      // Update option labels
+      document.getElementById('option-a-label').textContent = q.optionA;
+      document.getElementById('option-b-label').textContent = q.optionB;
+      
+      // Reset answer buttons
+      document.querySelectorAll('.answer-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      // Show previous answer if exists
+      if (answers[currentQuestion] !== undefined) {
+        const btn = document.querySelector(`.answer-btn[data-index="${answers[currentQuestion]}"]`);
+        if (btn) {
+          btn.classList.add('selected');
+        }
+      }
+      
+      // Update back button
+      document.getElementById('back-btn').disabled = currentQuestion === 0;
+      document.getElementById('back-btn').style.opacity = currentQuestion === 0 ? '0.4' : '1';
+    }
+
+    function selectAnswer(index) {
+      // Visual feedback
+      document.querySelectorAll('.answer-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      const selectedBtn = document.querySelector(`.answer-btn[data-index="${index}"]`);
+      selectedBtn.classList.add('selected');
+      
+      // Store answer
+      answers[currentQuestion] = index;
+      
+      // Wait a bit then proceed
+      setTimeout(() => {
+        if (currentQuestion < questions.length - 1) {
+          currentQuestion++;
+          showQuestion();
+        } else {
+          calculateResult();
+        }
+      }, 400);
+    }
+
+    function prevQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion();
+      }
+    }
+
+    function calculateResult() {
+      // Reset scores
+      scores = { TC: 0, PK: 0, GL: 0, OS: 0 };
+      
+      // Calculate scores from answers (3 questions per dimension)
+      answers.forEach((answer, i) => {
+        const dimension = questions[i].dimension;
+        const scoreValue = 2 - answer; // 2, 1, 0, -1, -2 (A positive, B negative)
+        scores[dimension] += scoreValue;
+      });
+      
+      // Determine type based on total scores
+      const T_C = scores.TC > 0 ? 'T' : 'C';
+      const P_K = scores.PK > 0 ? 'P' : 'K';
+      const G_L = scores.GL > 0 ? 'G' : 'L';
+      const O_S = scores.OS > 0 ? 'O' : 'S';
+      
+      const typeCode = T_C + P_K + G_L + O_S;
+      showResult(typeCode);
+    }
+
+    function showResult(typeCode) {
+		
+      document.getElementById('question-screen').classList.add('hidden');
+      document.getElementById('question-screen').classList.remove('flex');
+      document.getElementById('result-screen').classList.remove('hidden');
+      document.getElementById('result-screen').classList.add('flex');
+      
+      const type = characterTypes[typeCode];
+      const bestType = characterTypes[type.goodMatch];
+      const worstType = characterTypes[type.badMatch];
+      
+      document.getElementById('result-type').textContent = type.name;
+      document.getElementById('result-code').innerHTML = `${type.suit} ${typeCode}`;
+		
+		//画像を出す仕様
+    const illustration = document.getElementById('character-illustration');
+ illustration.innerHTML = `
+  <img
+    src="${type.image}"
+    alt="${type.name}"
+    class="w-28 h-28 object-contain"
+  />
+`;
+
+      document.getElementById('result-description').textContent = type.description;
+      document.getElementById('good-match').textContent = `${bestType.suit} ${bestType.name}`;
+      document.getElementById('bad-match').textContent = `${worstType.suit} ${worstType.name}`;
+      
+      // Set suit color
+      let suitColor = '#e91e63';
+      if (type.suit === '🔶') suitColor = '#ff9800';
+      else if (type.suit === '☘️') suitColor = '#4caf50';
+      else if (type.suit === '♠️') suitColor = '#607d8b';
+      
+      document.getElementById('result-code').style.color = suitColor;
+      
+      // Add confetti effect
+      setTimeout(() => {
+        createConfetti();
+      }, 300);
+    }
+    
+    function createConfetti() {
+      const container = document.getElementById('confetti-container');
+      if (!container) return;
+      
+      container.innerHTML = '';
+      const colors = ['#ffffff', '#ffd700'];
+      
+      for (let i = 0; i < 20; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        
+        // Center position
+        confetti.style.left = '50%';
+        confetti.style.top = '50%';
+        
+        // Random burst direction
+        const angle = (Math.PI * 2 * i) / 20 + (Math.random() - 0.5) * 0.5;
+        const distance = 100 + Math.random() * 100;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+        
+        confetti.style.setProperty('--tx', `${tx}px`);
+        confetti.style.setProperty('--ty', `${ty}px`);
+        
+        // Create star shape
+        const star = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        star.setAttribute('viewBox', '0 0 24 24');
+        star.setAttribute('width', '12');
+        star.setAttribute('height', '12');
+        star.style.display = 'block';
+        
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', 'M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z');
+        path.setAttribute('fill', colors[Math.floor(Math.random() * colors.length)]);
+        
+        star.appendChild(path);
+        confetti.appendChild(star);
+        
+        confetti.style.animationDelay = `${Math.random() * 0.1}s`;
+        container.appendChild(confetti);
+      }
+    }
+
+    function restartDiagnosis() {
+      document.getElementById('result-screen').classList.add('hidden');
+      document.getElementById('result-screen').classList.remove('flex');
+      document.getElementById('start-screen').classList.remove('hidden');
+      currentQuestion = 0;
+      answers = [];
+      scores = { TC: 0, PK: 0, GL: 0, OS: 0 };
+      
+    }
+
+    function getShareText() {
+      const resultType = document.getElementById('result-type').textContent;
+      const resultCode = document.getElementById('result-code').textContent;
+      return `🃏 Lキャラタイプ診断の結果\n\n私は「${resultType}」タイプでした！\n${resultCode}\n\n#Lキャラタイプ診断`;
+    }
+
+    function shareToLine() {
+      const shareText = getShareText();
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(shareText);
+      window.open(`https://line.me/R/msg/text/?${text}%0A${url}`, '_blank', 'noopener,noreferrer');
+    }
+
+    function shareToTwitter() {
+      const shareText = getShareText();
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(shareText);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'noopener,noreferrer');
+    }
+
+    function copyLink() {
+      const shareText = getShareText();
+      const fullText = `${shareText}\n${window.location.href}`;
+      
+      navigator.clipboard.writeText(fullText).then(() => {
+        const btn = document.getElementById('copy-btn-text');
+        const originalText = btn.textContent;
+        btn.textContent = 'コピーしました！';
+        setTimeout(() => {
+          btn.textContent = originalText;
+        }, 2000);
+      }).catch(() => {
+        const btn = document.getElementById('copy-btn-text');
+        btn.textContent = 'コピーできませんでした';
+        setTimeout(() => {
+          btn.textContent = 'リンクをコピー';
+        }, 2000);
+      });
+    }
+  </script>
+
+
+
+<script>
+window.toggleShareModal = function () {
+  const modal = document.getElementById("shareModal");
+  modal.style.display =
+    modal.style.display === "flex" ? "none" : "flex";
+};
+
+window.copyUrl = function () {
+  navigator.clipboard.writeText(location.href);
+  alert("リンクをコピーしたよ！");
+};
+</script>
+
+
+
+ <script>
+(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c76c01a4304d798',t:'MTc3MDAwNDQ5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
+</script></body>
+</html>
