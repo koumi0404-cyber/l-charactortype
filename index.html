@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" class="h-full">
+<html lang="ja" class="h-screen">
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -220,7 +220,7 @@
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="h-full">
+ <body class="h-screen">
   <div id="app" class="h-full w-full overflow-auto"><!-- Start Screen -->
    <div id="start-screen" class="min-h-full w-full flex flex-col items-center justify-center p-6 relative overflow-hidden" style="background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);"><!-- Decorative Elements -->
 
@@ -367,7 +367,7 @@
  <button onclick="toggleShareModal()" class="w-full py-4 font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border-2" style="background: white; color: #e91e63; border-color: #e91e63;"> 📤 診断結果をシェアする </button> 
 
 
-  <!-- モックアップ本体 -->
+  <!-- モーダル本体 -->
 
 <div
   id="shareModal"
@@ -377,7 +377,7 @@
   <!-- 背景 -->
   <div
     class="absolute inset-0 bg-black/40"
-    onclick="toggleshareModal()"
+    onclick="toggleShareModal()"
   ></div>
 
 
@@ -387,7 +387,7 @@
 
  <!-- 閉じるボタン -->
    <button
-  onclick="toggleShareModal()"
+  onclick="function()"
   class="absolute top-4 right-4 text-gray-400 text-xl"
 >
   ×
@@ -404,7 +404,7 @@
   </div>
 </div>
 
-  <!-- モックアップ本体ここまで -->
+  <!-- モーダル本体ここまで -->
 
 
      </div>
@@ -945,8 +945,18 @@ window.copyUrl = function () {
   alert("リンクをコピーしたよ！");
 };
 </script>
+ <!-- モーダル位置指定テスト -->
+<script>
+function toggleShareModal() {
+  const modal = document.getElementById("shareModal");
+  const isOpen = modal.style.display === "flex";
 
+  modal.style.display = isOpen ? "none" : "flex";
+  document.body.style.overflow = isOpen ? "" : "hidden";
+}
+</script>
 
+	 <!-- モーダル位置指定テストここまで -->
 
  <script>
 (function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c76c01a4304d798',t:'MTc3MDAwNDQ5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
