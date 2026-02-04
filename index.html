@@ -82,17 +82,38 @@
         </div>
 
         <!-- Answer Options -->
-        <div class="mb-8">
-          <div class="flex justify-between items-center mb-4 px-4">
-            <span id="option-a-label" class="text-sm font-bold" style="color: #e91e63;">攻めたい</span>
-            <span id="option-b-label" class="text-sm font-bold" style="color: #e91e63;">攻められたい</span>
-          </div>
+ <div class="mb-8">
+   <div class="flex justify-between items-center mb-4 px-4">
+
+    <button
+      onclick="selectAnswer(0)"
+      class="text-sm font-bold"
+      style="color: #e91e63;"
+    >
+      <span id="option-a-label">攻めたい</span>
+      </button>
+
+    <button
+      onclick="selectAnswer(1)"
+      class="text-sm font-bold"
+      style="color: #e91e63;"
+    >
+      <span id="option-b-label">攻められたい</span>
+      </button>
+
+  </div>
+</div>
+
+
+          
+
+          
           <div class="flex justify-center items-center gap-2">
-            <button class="answer-btn" onclick="selectAnswer(0)" data-index="0" id="btn-0">...</button>
-            <button class="answer-btn" onclick="selectAnswer(1)" data-index="1" id="btn-1">...</button>
-            <button class="answer-btn" onclick="selectAnswer(2)" data-index="2" id="btn-2">...</button>
-            <button class="answer-btn" onclick="selectAnswer(3)" data-index="3" id="btn-3">...</button>
-            <button class="answer-btn" onclick="selectAnswer(4)" data-index="4" id="btn-4">...</button>
+            <button class="answer-btn" onclick="selectAnswer(0)" data-index="0" id="btn-0">♡</button>
+            <button class="answer-btn" onclick="selectAnswer(1)" data-index="1" id="btn-1">♡</button>
+            <button class="answer-btn" onclick="selectAnswer(2)" data-index="2" id="btn-2">♡</button>
+            <button class="answer-btn" onclick="selectAnswer(3)" data-index="3" id="btn-3">♡</button>
+            <button class="answer-btn" onclick="selectAnswer(4)" data-index="4" id="btn-4">♡</button>
           </div>
         </div>
 
