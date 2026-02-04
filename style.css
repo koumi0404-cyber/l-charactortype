@@ -8,9 +8,6 @@ body, html {
   overflow-x: hidden;
 }
 
-body {
-  border: 5px solid red;
-}
 
 /* ===== ボタン ===== */
 button {
