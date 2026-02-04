@@ -198,7 +198,6 @@ const characterTypes = {
     badMatch: 'CKLS'
   }
 };
-};
 
 // ========================
 // 状態管理
