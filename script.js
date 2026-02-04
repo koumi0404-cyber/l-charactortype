@@ -34,7 +34,6 @@ const questions = [
 // キャラクタータイプデータ
 // ========================
 const characterTypes = {
-  const resultData = {
   // ❤️ PL型
   TPLO: {
     name: 'ダーククイーン',
