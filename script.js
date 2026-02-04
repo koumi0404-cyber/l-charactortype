@@ -7,7 +7,7 @@ console.log('🔥 script.js 読まれてます');
 const defaultConfig = {
   main_title: 'Lキャラタイプ診断',
   subtitle: '16タイプの中からあなたのキャラタイプを診断します',
-  start_button_text: '診断スタート',
+  start_button_text: '診断スタート！',
   primary_color: '#e91e63',
   secondary_color: '#ab47bc',
   background_color: '#fce4ec',
