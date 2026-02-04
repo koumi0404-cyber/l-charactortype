@@ -29,7 +29,7 @@ const questions = [
   
   { text: 'フォーマルな場でどちらを着たい？', optionA: 'セットアップ', optionB: 'ドレス', dimension: 'GL' },
   { text: '身体のラインを強調しない服を選びがちか', optionA: '選びがち', optionB: '選ばない', dimension: 'GL' },
-  { text: '初対面で言われて嬉しいのは？', optionA: 'かっこいい', optionB: 'かわいい', dimension: 'GL' }
+  { text: '初対面で言われて嬉しいのは？', optionA: 'かっこいい', optionB: 'かわいい', dimension: 'GL' },
   
   { text: '自分のセクシャリティを隠している？', optionA: '特に隠していない', optionB: '隠している', dimension: 'OS' },
   { text: '自分に対して他者評価が気になる？', optionA: '気にならない', optionB: '気になる', dimension: 'OS' },
