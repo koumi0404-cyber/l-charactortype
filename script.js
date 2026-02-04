@@ -326,3 +326,8 @@ function copyUrl() {
   navigator.clipboard.writeText(window.location.href);
   alert('URLをコピーしました！');
 }
+
+
+window.startDiagnosis = startDiagnosis;
+window.selectAnswer = selectAnswer;
+window.restartDiagnosis = restartDiagnosis;
