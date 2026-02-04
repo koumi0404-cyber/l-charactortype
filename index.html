@@ -221,7 +221,8 @@
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-screen">
-  <div id="app" class="h-full w-full overflow-auto"><!-- Start Screen -->
+  <div id="app" class="h-full w-full overflow-auto">
+	  <!-- Start Screen -->
    <div id="start-screen" class="min-h-full w-full flex flex-col items-center justify-center p-6 relative overflow-hidden" style="background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);"><!-- Decorative Elements -->
 
 <!-- 後ろのふよふよ -->
@@ -367,7 +368,17 @@
  <button onclick="toggleShareModal()" class="w-full py-4 font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border-2" style="background: white; color: #e91e63; border-color: #e91e63;"> 📤 診断結果をシェアする </button> 
 
 
-  <!-- モーダル本体 -->
+  
+
+
+     </div>
+    </div>
+	   
+   </div>
+  </div>
+
+
+	 <!-- モーダル本体 -->
   <!-- モーダルの位置を決める場所 -->
 <div
   id="shareModal"
@@ -406,12 +417,6 @@
 </div>
 
   <!-- モーダル本体ここまで -->
-
-
-     </div>
-    </div>
-   </div>
-  </div>
   <script>
     // Default configuration
     const defaultConfig = {
