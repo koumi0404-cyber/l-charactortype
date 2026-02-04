@@ -7,7 +7,7 @@ console.log('🔥 script.js 読まれてます');
 const defaultConfig = {
   main_title: 'Lキャラタイプ診断',
   subtitle: '16タイプの中からあなたのキャラタイプを診断します',
-  start_button_text: '診断スタート！',
+  start_button_text: '診断スタート',
   primary_color: '#e91e63',
   secondary_color: '#ab47bc',
   background_color: '#fce4ec',
@@ -277,20 +277,18 @@ function showResult() {
 
   const tc = scores.TC >= 0 ? 'T' : 'C';
   const pk = scores.PK >= 0 ? 'P' : 'K';
-  const os = scores.OS >= 0 ? 'G' : 'L';
-  const gl = scores.GL >= 0 ? 'O' : 'S';
+  const gl = scores.GL >= 0 ? 'G' : 'L';
+  const os = scores.OS >= 0 ? 'O' : 'S';
 
   const typeKey = `${tc}${pk}${gl}${os}`;
-  
-console.log('resultType:', resultType);
-console.log('characterTypes keys:', Object.keys(characterTypes));
 
-  
+  console.log('typeKey:', typeKey);
+
   const type = characterTypes[typeKey];
 
   if (!type) {
     resultType.textContent = '診断エラー';
-    resultDescription.textContent = 'タイプデータが見つかりませんでした...';
+    resultDescription.textContent = `タイプデータが見つかりませんでした（${typeKey}）`;
     return;
   }
 
@@ -301,6 +299,7 @@ console.log('characterTypes keys:', Object.keys(characterTypes));
     <img src="${type.image}" alt="${type.name}" class="w-48 h-48 object-contain mb-4">
   `;
 }
+
 
 // 診断結果の分岐ここまで
 
