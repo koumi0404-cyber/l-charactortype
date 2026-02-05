@@ -1,12 +1,12 @@
 /* ===== 全体 ===== */
-html, body {
+body, html {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  height: 100%;
   font-family: 'Zen Maru Gothic', 'Outfit', sans-serif;
   background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);
+  overflow-x: hidden;
 }
-
 
 /* ===== ボタン ===== */
 button {
@@ -120,60 +120,3 @@ button {
     font-size: 0.95rem;
   }
 }
-
-
-/* ===== 結果画面余白調整 ===== */
-#result-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
-  padding: 2rem 1rem;
-  margin: 0;
-  gap: 1rem;
-  overflow-y: auto;
-  text-align: center;
-  box-sizing: border-box;
-}
-
-/* ボタン類を縦並びに＆デザイン追加 */
-#result-screen .buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* 共通ボタンデザイン */
-#result-screen .buttons button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 9999px;      /* 丸み */
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: all 0.2s ease;
-}
-
-/* 「もう一度診断」ボタン */
-#result-screen .buttons button:first-child {
-  background-color: #fff;
-  color: #333;
-}
-
-/* 「シェア」ボタン */
-#result-screen #share-button {
-  background-color: #ec407a;
-  color: #fff;
-}
-
-/* ホバー時のアニメーション */
-#result-screen .buttons button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-}
-
-
-
