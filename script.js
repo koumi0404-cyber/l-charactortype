@@ -311,39 +311,33 @@ resultScreen.scrollIntoView({ behavior: 'smooth' });
 
 // 診断結果の分岐ここまで
 
-function restartDiagnosis() {
-  resultScreen.classList.add('hidden');
-  startScreen.classList.remove('hidden');
-  scores = { TC: 0, PK: 0, GL: 0, OS: 0 };
-}
+document.addEventListener('DOMContentLoaded', () => {
 
-// ========================
-// モーダル
-// ========================
-const shareModal = document.getElementById('shareModal');
-function toggleShareModal() {
-  if (shareModal.style.display === 'none') {
-    shareModal.style.display = 'flex';
-  } else {
-    shareModal.style.display = 'none';
+  const resultScreen = document.getElementById('result-screen');
+  const startScreen = document.getElementById('start-screen');
+  const shareModal = document.getElementById('shareModal');
+
+  // 診断リスタート
+  function restartDiagnosis() {
+    resultScreen.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+    scores = { TC: 0, PK: 0, GL: 0, OS: 0 };
   }
-}
 
-function copyUrl() {
-  navigator.clipboard.writeText(window.location.href);
-  alert('URLをコピーしました！');
-}
+  // シェアモーダル開閉
+  function openShareModal() {
+    if (shareModal) shareModal.style.display = 'flex';
+  }
 
+  function toggleShareModal() {
+    if (!shareModal) return;
+    shareModal.style.display = shareModal.style.display === 'none' ? 'flex' : 'none';
+  }
 
-window.startDiagnosis = startDiagnosis;
-window.selectAnswer = selectAnswer;
-window.restartDiagnosis = restartDiagnosis;
+  // 関数を window に登録（HTML の onclick 用）
+  window.restartDiagnosis = restartDiagnosis;
+  window.openShareModal = openShareModal;
+  window.toggleShareModal = toggleShareModal;
+});
 
-// 2/5 15:45 オープンシェアモーダル追加
-function openShareModal() {
-  shareModal.style.display = 'flex';
-}
-
-window.openShareModal = openShareModal;
-window.toggleShareModal = toggleShareModal;
 
