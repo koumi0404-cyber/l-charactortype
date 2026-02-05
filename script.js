@@ -232,93 +232,21 @@ const resultDescription = document.getElementById('result-description');
 const characterIllustration = document.getElementById('character-illustration');
 
 // ========================
-// 関数
+// 診断開始
 // ========================
 function startDiagnosis() {
-  startScreen.classList.add('hidden');
-  questionScreen.classList.remove('hidden');
+  const startScreen = document.getElementById('start-screen');
+  const questionScreen = document.getElementById('question-screen');
+  if (startScreen) startScreen.classList.add('hidden');
+  if (questionScreen) questionScreen.classList.remove('hidden');
+
   currentQuestionIndex = 0;
   updateQuestion();
 }
-
-function updateQuestion() {
-  const q = questions[currentQuestionIndex];
-  questionText.textContent = q.text;
-  questionNumber.textContent = `Q${currentQuestionIndex + 1}`;
-  optionALabel.textContent = q.optionA;
-  optionBLabel.textContent = q.optionB;
-
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-  progressBar.style.width = `${progress}%`;
-  progressText.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
-}
-
-function selectAnswer(option) {
-  const dimension = questions[currentQuestionIndex].dimension;
-  if (option === 0) scores[dimension] += 1;
-  if (option === 1) scores[dimension] -= 1;
-
-  currentQuestionIndex++;
-  if (currentQuestionIndex < questions.length) {
-    updateQuestion();
-  } else {
-    showResult();
-  }
-}
-
-function prevQuestion() {
-  if (currentQuestionIndex > 0) {
-    currentQuestionIndex--;
-    updateQuestion();
-  }
-}
-
-// 診断結果の分岐
-function showResult() 
-{
-  questionScreen.classList.add('hidden');
-  resultScreen.classList.remove('hidden');
-
-const tc = scores.TC > 0 ? 'T' : 'C';
-const pk = scores.PK > 0 ? 'P' : 'K';
-const gl = scores.GL > 0 ? 'G' : 'L';
-const os = scores.OS > 0 ? 'O' : 'S';
-
-  const typeKey = `${tc}${pk}${gl}${os}`;
-
-  console.log('typeKey:', typeKey);
-
-  const type = characterTypes[typeKey];
-
-  if (!type) {
-    resultType.textContent = '診断エラー';
-    resultDescription.textContent = `タイプデータが見つかりませんでした（${typeKey}）`;
-    return;
-  }
-
-  resultType.textContent = `${type.suit} ${type.name}`;
-  resultDescription.textContent = type.description;
-
-  characterIllustration.innerHTML = `
-    <img src="${type.image}" alt="${type.name}" class="w-48 h-48 object-contain mb-4">
-  `;
-//2/5 15:48追加
-  resultScreen.style.display = 'flex';
-resultScreen.scrollIntoView({ behavior: 'smooth' });
-//2/5 15:48追加ここまで
-}
-
-
-// 診断結果の分岐ここまで
-
-document.addEventListener('DOMContentLoaded', () => {
-
-  const resultScreen = document.getElementById('result-screen');
-  const startScreen = document.getElementById('start-screen');
-  const shareModal = document.getElementById('shareModal');
+window.startDiagnosis = startDiagnosis;
 
 // ========================
-// 診断結果リスタート
+// 診断リスタート
 // ========================
 function restartDiagnosis() {
   const resultScreen = document.getElementById('result-screen');
@@ -328,30 +256,21 @@ function restartDiagnosis() {
   if (startScreen) startScreen.classList.remove('hidden');
 
   // スコアをリセット
-  if (typeof scores !== 'undefined') {
-    scores = { TC: 0, PK: 0, GL: 0, OS: 0 };
-  }
+  scores = { TC: 0, PK: 0, GL: 0, OS: 0 };
 }
 window.restartDiagnosis = restartDiagnosis;
-
-}
 
 // ========================
 // シェアモーダル
 // ========================
+const shareModal = document.getElementById('shareModal');
 function openShareModal() {
-  const shareModal = document.getElementById('shareModal');
   if (shareModal) shareModal.style.display = 'flex';
 }
-
 function toggleShareModal() {
-  const shareModal = document.getElementById('shareModal');
   if (!shareModal) return;
   shareModal.style.display = shareModal.style.display === 'none' ? 'flex' : 'none';
 }
-
-// 関数をグローバル化（HTML onclick で呼ぶ用）
-window.restartDiagnosis = restartDiagnosis;
 window.openShareModal = openShareModal;
 window.toggleShareModal = toggleShareModal;
 
