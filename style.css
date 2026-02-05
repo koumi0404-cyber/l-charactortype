@@ -122,7 +122,6 @@ button {
 }
 /* ===== 結果画面余白調整 ===== */
 #result-screen {
-  display: block;
   min-height: 100vh; /* 画面全体 */
   padding-top: 1rem;
   padding-bottom: 1.5rem;
