@@ -127,20 +127,30 @@
     </div>
 
 <!-- Result Screen -->
-<div id="result-screen">
-  <h2 id="result-type"></h2>
-  <div id="character-illustration"></div>
-  <p id="result-description"></p>
-  <div id="good-match"></div>
-  <div id="bad-match"></div>
+<div
+  id="result-screen"
+  class="w-full"
+  style="display: none; margin: 0; padding: 1rem; background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);"
+>
+  <!-- 診断タイプ -->
+  <h2 id="result-type" style="margin: 0 0 1rem 0; text-align:center;"></h2>
+ 
+  <!-- キャラクターイラスト -->
+  <div id="character-illustration" style="margin-bottom: 1rem;"></div>
   
+  <!-- 診断説明文 -->
+  <p id="result-description" style="margin: 0 0 1rem 0; text-align:center;"></p>
+
+  <!-- 相性表示 -->
+<div id="good-match" style="margin-bottom: 0.5rem; font-weight:600; color:#ec407a; text-align:center;"></div>
+  <div id="bad-match" style="margin-bottom: 1rem; color:#9e9e9e; text-align:center;"></div>
+
   <!-- ボタン類 -->
-  <div class="buttons">
-    <button onclick="restartDiagnosis()">もう一度診断する</button>
-    <button id="share-button" onclick="openShareModal()">シェアする</button>
+  <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem;">
+    <button onclick="restartDiagnosis()" style="padding:0.75rem 1.5rem; border-radius:9999px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.1);">もう一度診断する</button>
+    <button id="share-button" onclick="openShareModal()" style="padding:0.75rem 1.5rem; border-radius:9999px; background:#ec407a; color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.1);">シェアする</button>
   </div>
 </div>
-
 
   
 <!-- Result Screenここまで -->
